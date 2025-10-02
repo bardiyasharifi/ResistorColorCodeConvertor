@@ -1,16 +1,16 @@
 import sys
 from re import findall
-from PySide6.QtCore import Qt, QRect
+from PySide6.QtCore import Qt, QRect, QSize
 from PySide6.QtGui import QPixmap, QIcon, QPainter, QPen, QColor, QBrush, QFont, QClipboard
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QComboBox, QRadioButton,
     QLabel, QTextEdit, QFrame, QPushButton, QFileDialog
 )
 
-colors = ["Black", "Brown", "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Grey", "White"]
-colors_without_black = ["Brown", "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Grey", "White"]
+colors = ["Black", "Brown", "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Gray", "White"]
+colors_without_black = ["Brown", "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Gray", "White"]
 multipliers = {"Black": 1, "Brown": 10, "Red": 100, "Orange": 1000, "Yellow": 10000, "Green": 10 ** 5, "Blue": 10 ** 6,
-               "Violet": 10 ** 7, "Grey": 10 ** 8, "White": 10 ** 9, "Gold": 0.1, "Silver": 0.01}
+               "Violet": 10 ** 7, "Gray": 10 ** 8, "White": 10 ** 9, "Gold": 0.1, "Silver": 0.01}
 reversed_multipliers = {value: key for key, value in multipliers.items()}  # To use in ohm to color code conversion
 tolerances = {"Brown": 1, "Red": 2, "Orange": 3, "Yellow": 4, "Green": 0.5, "Blue": 0.25, "Violet": 0.1, "Gray": 0.05,
               "Gold": 5, "Silver": 10}
@@ -223,6 +223,7 @@ class RCCC(QMainWindow):
         self.resistor_pixmap.setPixmap(self.canvas)
 
     def selected_band(self):
+
         self.band = self.number_of_bands.currentText()
         if self.band == "4 Bands":
             self.first_band.clear()
@@ -235,9 +236,14 @@ class RCCC(QMainWindow):
             self.third_band.addItems(multipliers)
             self.third_band_str.setText("Multiplier :")
 
+            for i in range(0, 12):
+                self.third_band.setItemIcon(i, QIcon(f"icons/{list(multipliers)[i]}"))
+
             self.forth_band.clear()
             self.forth_band.addItems(tolerances)
             self.forth_band_str.setText("Tolerance :")
+            for i in range(0, 10):
+                self.forth_band.setItemIcon(i, QIcon(f"icons/{list(tolerances)[i]}"))
 
             self.fifth_band.setVisible(False)
             self.fifth_band_str.setVisible(False)
@@ -266,14 +272,20 @@ class RCCC(QMainWindow):
             self.third_band.clear()
             self.third_band.addItems(colors)
             self.third_band_str.setText("3rd Digit :")
+            for i in range(0, 10):
+                self.third_band.setItemIcon(i, QIcon(f"icons/{colors[i]}"))
 
             self.forth_band.clear()
             self.forth_band.addItems(multipliers)
             self.forth_band_str.setText("Multiplier :")
+            for i in range(0, 12):
+                self.forth_band.setItemIcon(i, QIcon(f"icons/{list(multipliers)[i]}"))
 
             self.fifth_band.clear()
             self.fifth_band.addItems(tolerances)
             self.fifth_band_str.setText("Tolerance :")
+            for i in range(0, 10):
+                self.fifth_band.setItemIcon(i, QIcon(f"icons/{list(tolerances)[i]}"))
 
             self.fifth_band.setVisible(True)
             self.fifth_band_str.setVisible(True)
@@ -301,10 +313,14 @@ class RCCC(QMainWindow):
             self.third_band.clear()
             self.third_band.addItems(colors)
             self.third_band_str.setText("3rd Digit :")
+            for i in range(0, 10):
+                self.third_band.setItemIcon(i, QIcon(f"icons/{colors[i]}"))
 
             self.forth_band.clear()
             self.forth_band.addItems(multipliers)
             self.forth_band_str.setText("Multiplier :")
+            for i in range(0, 12):
+                self.forth_band.setItemIcon(i, QIcon(f"icons/{list(multipliers)[i]}"))
 
             self.fifth_band.clear()
             self.fifth_band.addItems(tolerances)
@@ -328,6 +344,18 @@ class RCCC(QMainWindow):
             self.painter.fillRect(self.sixth_band_rect, QColor(DEFAULT_BAND_COLOR))
 
             self.resistor_pixmap.setPixmap(self.canvas)
+            
+        for i in range(0, 9):
+            self.first_band.setItemIcon(i, QIcon(f"icons/{colors_without_black[i]}"))
+
+        for i in range(0, 10):
+            self.second_band.setItemIcon(i, QIcon(f"icons/{colors[i]}"))
+
+        for i in range(0, 10):
+            self.fifth_band.setItemIcon(i, QIcon(f"icons/{list(tolerances)[i]}"))
+
+        for i in range(0, 6):
+            self.sixth_band.setItemIcon(i, QIcon(f"icons/{list(tempco)[i]}"))
 
     def state_one(self):  # For color code to ohm conversion
         self.label.setText("Result :")
@@ -459,7 +487,7 @@ class RCCC(QMainWindow):
 
         elif self.band == "5 Bands":
             try:
-                digits = int("{0}{1}{2}".format(colors_without_black.index(self.first_band.currentText()),
+                digits = int("{0}{1}{2}".format(colors_without_black.index(self.first_band.currentText()) + 1,
                                                 colors.index(self.second_band.currentText()),
                                                 colors.index(self.third_band.currentText())))
                 digits *= multipliers.get(self.forth_band.currentText())
@@ -478,7 +506,7 @@ class RCCC(QMainWindow):
 
         elif self.band == "6 Bands":
             try:
-                digits = int("{0}{1}{2}".format(colors_without_black.index(self.first_band.currentText()),
+                digits = int("{0}{1}{2}".format(colors_without_black.index(self.first_band.currentText()) + 1,
                                                 colors.index(self.second_band.currentText()),
                                                 colors.index(self.third_band.currentText())))
 
